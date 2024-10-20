@@ -12,6 +12,16 @@ export const Navbar = () => {
         navigate("/login"); // Redirige a la página de login
     };
 
+    const handleLanguageChange = (event) => {
+        const selectedLanguage = event.target.value;
+        actions.addUserLanguage({ language: selectedLanguage });
+    };
+
+    const handleCountryChange = (event) => {
+        const selectedCountry = event.target.value;
+        actions.addUserCountry({ country: selectedCountry });
+    };
+
     return (
         <nav className="navbar navbar-light bg-light">
             <div className="container">
@@ -19,6 +29,18 @@ export const Navbar = () => {
                     <span className="navbar-brand mb-0 h1">TapNews</span>
                 </Link>
                 <div className="ml-auto">
+                    <select onChange={handleLanguageChange}>
+                        <option value="">Select Language</option>
+                        <option value="en">English</option>
+                        <option value="es">Spanish</option>
+                        {/* Agrega más opciones según sea necesario */}
+                    </select>
+                    <select onChange={handleCountryChange}>
+                        <option value="">Select Country</option>
+                        <option value="us">United States</option>
+                        <option value="es">Spain</option>
+                        {/* Agrega más opciones según sea necesario */}
+                    </select>
                     <Link to="/login">
                         <button className="btn btn-primary">Iniciar Sesión</button>
                     </Link>

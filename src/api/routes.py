@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, url_for, Blueprint
-from api.models import db, User, Category, UserCategory, Author, Newspaper, Article, Administrator
+from api.models import db, User, Category, UserCategory, Author, Newspaper, Article, Administrator, UserLanguage, UserCountry
 from api.utils import generate_sitemap, APIException
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
@@ -833,6 +833,39 @@ def update_article_category(article_id):
     except Exception as e:
         db.session.rollback()
         return jsonify({'error': str(e)}), 500
+
+@api.route('/user-language', methods=['POST'])
+@jwt_required()
+def add_user_language():
+    user_id = get_jwt_identity()
+    request_body = request.get_json()
+    language = request_body.get('language')
+
+    if not language:
+        return jsonify({"error": "Language is required"}), 400
+
+    new_user_language = UserLanguage(user_id=user_id, language=language)
+    db.session.add(new_user_language)
+    db.session.commit()
+
+    return jsonify({"msg": "Language added successfully"}), 201
+
+@api.route('/user-country', methods=['POST'])
+@jwt_required()
+def add_user_country():
+    user_id = get_jwt_identity()
+    request_body = request.get_json()
+    country = request_body.get('country')
+
+    if not country:
+        return jsonify({"error": "Country is required"}), 400
+
+    new_user_country = UserCountry(user_id=user_id, country=country)
+    db.session.add(new_user_country)
+    db.session.commit()
+
+    return jsonify({"msg": "Country added successfully"}), 201
+
 
 
 

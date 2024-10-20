@@ -146,3 +146,39 @@ class Article(db.Model):
             'newspaper': self.newspaper.serialize(),
             'category': self.category.serialize()
         }
+
+class UserLanguage(db.Model):
+    __tablename__ = 'user_languages'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    language = db.Column(db.String(10), nullable=False)
+
+    user = db.relationship('User', backref='user_languages')
+
+    def __repr__(self):
+        return f"<UserLanguage User ID: {self.user_id}, Language: {self.language}>"
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'language': self.language,
+        }
+
+class UserCountry(db.Model):
+    __tablename__ = 'user_countries'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    country = db.Column(db.String(10), nullable=False)
+
+    user = db.relationship('User', backref='user_countries')
+
+    def __repr__(self):
+        return f"<UserCountry User ID: {self.user_id}, Country: {self.country}>"
+
+    def serialize(self):
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'country': self.country,
+        }
