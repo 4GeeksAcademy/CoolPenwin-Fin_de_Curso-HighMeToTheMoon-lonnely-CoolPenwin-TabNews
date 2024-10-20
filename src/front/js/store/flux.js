@@ -339,6 +339,50 @@ const getState = ({ getStore, getActions, setStore }) => {
 				setStore({ temp: props });
 				console.log("ID para editar:", props); 
 			},
+
+			updateCategoriesFromAPI: async () => {
+				try {
+					const response = await fetch('URL_DE_TU_API_DE_CATEGORIAS');
+					const data = await response.json();
+
+					if (data.status === "ok") {
+						const categories = data.sources.map(source => ({
+							id: source.id,
+							name: source.name,
+							description: source.description,
+							category: source.category,
+							language: source.language,
+							country: source.country
+						}));
+
+						// Aquí puedes guardar las categorías en tu base de datos
+						// Por ejemplo, usando una acción para guardar en el store
+						setStore({ categories });
+					}
+				} catch (error) {
+					console.error("Error al actualizar categorías:", error);
+				}
+			},
+
+			saveUserPreferences: async (preferences) => {
+				try {
+					const response = await fetch(`${process.env.BACKEND_URL}/api/user/preferences`, {
+						method: "POST",
+						headers: {
+							"Content-Type": "application/json",
+						},
+						body: JSON.stringify(preferences),
+					});
+
+					if (!response.ok) {
+						throw new Error("Error al guardar preferencias");
+					}
+
+					// Aquí puedes manejar la respuesta si es necesario
+				} catch (error) {
+					console.error("Error al guardar preferencias:", error);
+				}
+			},
 		}
 	};
 };
