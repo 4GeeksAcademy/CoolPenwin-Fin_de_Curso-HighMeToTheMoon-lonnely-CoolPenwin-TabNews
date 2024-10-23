@@ -5,8 +5,9 @@ import { CardArticle } from "../component/CardArticle";
 
 export const Home = () => {
     const { store, actions } = useContext(Context);
-    const [selectedCategories, setSelectedCategories] = useState([]); // Estado para las categorías seleccionadas
-    const [showFilters, setShowFilters] = useState(false); // Estado para mostrar u ocultar los filtros
+    const [selectedCategories, setSelectedCategories] = useState([]);
+    const [selectedNewspapers, setSelectedNewspapers] = useState([]); // Estado para los periódicos seleccionados
+    const [showFilters, setShowFilters] = useState(false);
 
     useEffect(() => {
         actions.checkAndFetchData();
@@ -23,15 +24,26 @@ export const Home = () => {
         }
     };
 
+    // Función para manejar el cambio de periódicos
+    const handleNewspaperChange = (newspaper) => {
+        if (selectedNewspapers.includes(newspaper)) {
+            setSelectedNewspapers(selectedNewspapers.filter((news) => news !== newspaper));
+        } else {
+            setSelectedNewspapers([...selectedNewspapers, newspaper]);
+        }
+    };
+
     // Filtrar artículos por las categorías seleccionadas
-    const filteredArticles = selectedCategories.length > 0
-        ? store.Articles.filter((article) => selectedCategories.includes(article.category.name))
-        : store.Articles;
+    const filteredArticles = store.Articles.filter((article) => {
+        const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(article.category.name);
+        const newspaperMatch = selectedNewspapers.length === 0 || selectedNewspapers.includes(article.newspaper.name);
+        return categoryMatch && newspaperMatch;
+    });
 
     return (
         <div className="text-center mt-5">
             <h1 className="text-danger">HOMEE</h1>
-            <button className="btn btn-primary" onClick={()=>{actions.getArticleApiData()}}>traer datos de api</button>
+            <button className="btn btn-primary" onClick={() => { actions.getArticleApiData() }}>traer datos de api</button>
 
             {/* Botón para mostrar u ocultar los filtros */}
             <div className="my-4">
@@ -44,7 +56,7 @@ export const Home = () => {
             {showFilters && (
                 <div className="my-4">
                     <button onClick={() => setSelectedCategories([])} className="btn btn-secondary mx-2">
-                        Todas
+                        Todas las categorías
                     </button>
                     {store.categories.map((category, index) => (
                         <button
@@ -54,6 +66,17 @@ export const Home = () => {
                         >
                             {category.name}
                         </button>
+                    ))}
+                    <h5>Selecciona Periódicos:</h5>
+                    {store.newspapers.map((newspaper, index) => (
+                        <div key={index}>
+                            <input
+                                type="checkbox"
+                                checked={selectedNewspapers.includes(newspaper.name)}
+                                onChange={() => handleNewspaperChange(newspaper.name)}
+                            />
+                            {newspaper.name}
+                        </div>
                     ))}
                 </div>
             )}

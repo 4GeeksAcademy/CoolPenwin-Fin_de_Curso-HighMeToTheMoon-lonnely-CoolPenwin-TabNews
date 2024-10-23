@@ -7,6 +7,7 @@ export const HomePage = () => {
     const { store, actions } = useContext(Context);
     const navigate = useNavigate();
     const [selectedCategories, setSelectedCategories] = useState([]);
+    const [selectedNewspapers, setSelectedNewspapers] = useState([]); // Estado para los periódicos seleccionados
     const [userPreferredCategories, setUserPreferredCategories] = useState([]);
     const [showFilters, setShowFilters] = useState(false);
     const [showPreferences, setShowPreferences] = useState(false);
@@ -41,14 +42,26 @@ export const HomePage = () => {
         });
     };
 
-    const savePreferences = async () => {
-        await actions.saveUserPreferredCategories(selectedCategories);
-        setShowPreferences(false); // Cerrar el modal después de guardar
+    const handleNewspaperChange = (newspaper) => {
+        setSelectedNewspapers(prevSelectedNewspapers => {
+            if (prevSelectedNewspapers.includes(newspaper)) {
+                return prevSelectedNewspapers.filter(news => news !== newspaper);
+            } else {
+                return [...prevSelectedNewspapers, newspaper];
+            }
+        });
     };
 
-    const filteredArticles = selectedCategories.length > 0
-        ? store.Articles.filter((article) => selectedCategories.includes(article.category.id))
-        : store.Articles;
+    const savePreferences = async () => {
+        await actions.saveUserPreferredCategories(selectedCategories);
+        setShowPreferences(false);
+    };
+
+    const filteredArticles = store.Articles.filter((article) => {
+        const categoryMatch = selectedCategories.length === 0 || selectedCategories.includes(article.category.id);
+        const newspaperMatch = selectedNewspapers.length === 0 || selectedNewspapers.includes(article.newspaper.name);
+        return categoryMatch && newspaperMatch;
+    });
 
     return (
         <div className="container mt-5">
@@ -77,6 +90,17 @@ export const HomePage = () => {
                         >
                             {category.name}
                         </button>
+                    ))}
+                    <h5>Selecciona Periódicos:</h5>
+                    {store.newspapers.map((newspaper, index) => (
+                        <div key={index}>
+                            <input
+                                type="checkbox"
+                                checked={selectedNewspapers.includes(newspaper.name)}
+                                onChange={() => handleNewspaperChange(newspaper.name)}
+                            />
+                            {newspaper.name}
+                        </div>
                     ))}
                 </div>
             )}
@@ -119,7 +143,7 @@ export const HomePage = () => {
                             newspaper={article.newspaper}
                             category={article.category}
                             id={article.id}
-                            showEditButton={false} // Muestra el botón de editar
+                            showEditButton={false}
                             showDeleteButton={false}
                         />
                     ))
