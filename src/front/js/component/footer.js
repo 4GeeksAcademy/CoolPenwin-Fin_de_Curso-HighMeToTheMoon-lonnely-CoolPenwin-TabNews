@@ -10,7 +10,9 @@ export const Footer = () => (
   }}
 >
   <p style={{ margin: 0, fontSize: '1rem' }}> {/* Ajusté el tamaño de fuente a 1rem */}
-      Made with <a style={{ textDecoration: 'none' }} href="https://github.com/Souwg">🍑</a>by
+
+      Made with <a style={{ textDecoration: 'none' }} href="https://github.com/Souwg">🍑</a> by
+
       <a
           href="https://github.com/CoolPenwin"
           style={{
